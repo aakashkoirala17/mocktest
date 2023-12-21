@@ -1,0 +1,13 @@
+.App {
+  text-align: left;
+}
+
+.App h1 {
+  color: #282c34;
+}
+
+.App button {
+  padding: 10px 20px;
+  margin-top: 20px;
+  font-size: 16px;
+}
