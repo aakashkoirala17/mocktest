@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { aakash } from "../assets";
 import "../index.css";
 
 function ProfileDetails() {
@@ -27,19 +28,19 @@ function ProfileDetails() {
   };
 
   return (
-    <div className="profile-details">
-      <h1>Profile Details</h1>
-      <div>
-        <strong>Profile Name:</strong> {profileName}
+    <div className="fixed top-0 right-0 p-4 bg-white shadow-md flex items-center justify-between w-64">
+      <div className="flex items-center">
+        <img src={aakash} alt="User" className="w-10 h-10 rounded-full mr-2" />
+        <div>
+          <h1 className="text-lg font-semibold">{profileName}</h1>
+          <p className="text-sm text-gray-600">Roll No: {rollNo}</p>
+          <p className="text-sm text-gray-600">Date: {date}</p>
+        </div>
       </div>
       <div>
-        <strong>Roll No:</strong> {rollNo}
-      </div>
-      <div>
-        <strong>Date:</strong> {date}
-      </div>
-      <div>
-        <strong>Time Remaining:</strong> {formatTime(timer)}
+        <p className="text-sm text-gray-600">
+          Time Remaining: {formatTime(timer)}
+        </p>
       </div>
     </div>
   );
