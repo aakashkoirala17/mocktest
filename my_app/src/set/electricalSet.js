@@ -1,6 +1,4 @@
-export const quizData = [
-  // Section A: 60 questions, 1 mark each
-  
+[
     {
         "question": "The S.I. unit of power is",
         "answer": "c) Watt",
@@ -561,8 +559,5 @@ export const quizData = [
         "answer": "b",
         "section": "B",
         "mark": 2,
-    },
-
-
-  // Add more questions for section B here
-];
+    }
+]
