@@ -1,16 +1,42 @@
 import React, { useEffect, useState } from "react";
 import ProfileDetails from "../components/profileDetails";
-import { quizData } from "../set/computerSet";
+import { civilQuizData } from "../set/civilSets";
+import { compQuizData } from "../set/computerSet";
+import electricQuizData from "../set/electricalSet";
+import { electronicQuizData } from "../set/electrnoicsSet";
+import { mechanicalQuizData } from "../set/mechanicalSet";
 const questionsPerPage = 20; // Number of questions to show per page
 const timeLimit = 2 * 60 * 60; // Time limit in seconds
 const passMark = 50; // Pass mark for the quiz
 
-function QuizScreen() {
+function QuizScreen(props) {
+  const { selectedFaculty } = props;
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [score, setScore] = useState(0);
   const [timeLeft, setTimeLeft] = useState(timeLimit);
   const [selectedOptions, setSelectedOptions] = useState({}); // The options selected by the user for each question
   const [isFinished, setIsFinished] = useState(false); // Whether the quiz is finished or not
+  const [quizData, setQuizData] = useState([]);
+  const [shuffledQuizData, setShuffledQuizData] = useState([]);
+
+  useEffect(() => {
+    switch (selectedFaculty) {
+      case "Civil Engineering":
+        setQuizData(civilQuizData);
+        break;
+      case "Computer Engineering":
+        setQuizData(compQuizData);
+        break;
+      case "Mechanical Engineering":
+        setQuizData(mechanicalQuizData);
+        break;
+      case "Electrical Engineering":
+        setQuizData(electricQuizData);
+        break;
+      default:
+        setQuizData(electronicQuizData);
+    }
+  }, []);
 
   useEffect(() => {
     // Set up a timer to count down the time left
@@ -27,9 +53,12 @@ function QuizScreen() {
     // Loop through the selected options and update the score accordingly
     for (let questionIndex in selectedOptions) {
       // Check if the selected option is correct
-      if (selectedOptions[questionIndex] === quizData[questionIndex].answer) {
+      if (
+        selectedOptions[questionIndex] ===
+        shuffledQuizData[questionIndex].answer
+      ) {
         // Update the score based on the question's mark
-        setScore(score + quizData[questionIndex].mark);
+        setScore(score + shuffledQuizData[questionIndex].mark);
       }
     }
     // Finish the quiz
@@ -63,14 +92,43 @@ function QuizScreen() {
       .toString()
       .padStart(2, "0")}:${sec.toString().padStart(2, "0")}`;
   };
+  // get random data
+  function shuffleArray(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [array[i], array[j]] = [array[j], array[i]];
+    }
+    return array;
+  }
+
+  function getRandomQuestionsByMark(mark) {
+    const filteredQuestions = quizData.filter(
+      (question) => question.mark === mark
+    );
+
+    const shuffledQuestions = shuffleArray([...filteredQuestions]);
+
+    return shuffledQuestions;
+  }
+  useEffect(() => {
+    const randomMark1Questions = getRandomQuestionsByMark(1);
+    const randomMark2Questions = getRandomQuestionsByMark(2);
+
+    const shuffledQuestions = shuffleArray([
+      ...randomMark1Questions,
+      ...randomMark2Questions,
+    ]);
+    setShuffledQuizData(shuffledQuestions);
+  }, [quizData]);
 
   return (
     <div className="min-h-screen bg-gray-100">
       <ProfileDetails />
 
       <div className="max-w-lg p-8 bg-white shadow-md rounded-md mx-auto mt-16">
-        <h1 className="text-2xl font-semibold mb-6">NEC MOCK TEST</h1>
-
+        <h1 className="text-2xl font-semibold mb-6">
+          NEC MOCK TEST (<span className="text-sm">{selectedFaculty}</span>)
+        </h1>
         {isFinished ? (
           <div>
             <h2 className="text-xl font-semibold mb-2">Test Completed!</h2>
@@ -83,13 +141,14 @@ function QuizScreen() {
           </div>
         ) : (
           <div>
-            {quizData
+            {shuffledQuizData
               .slice(currentQuestion, currentQuestion + questionsPerPage)
               .map((question, index) => (
                 <div key={index} className="mb-6">
                   <h3 className="text-xl font-semibold mb-2">
-                    {question.question}
+                    {index + 1}. {question.question}
                   </h3>
+
                   <p className="text-gray-600">{question.mark} mark(s).</p>
                   <form className="mt-4">
                     {question.options.map((option) => (
@@ -124,7 +183,7 @@ function QuizScreen() {
                   Previous Page
                 </button>
               )}
-              {currentQuestion < quizData.length - questionsPerPage && (
+              {currentQuestion < shuffledQuizData.length - questionsPerPage && (
                 <button
                   onClick={handleNextPage}
                   className="bg-blue-500 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded focus:outline-none focus:shadow-outline-blue"
