@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import ProfileDetails from "../components/profileDetails";
 import { civilQuizData } from "../set/civilSets";
 import { compQuizData } from "../set/computerSet";
@@ -18,6 +18,7 @@ function QuizScreen(props) {
   const [isFinished, setIsFinished] = useState(false); // Whether the quiz is finished or not
   const [quizData, setQuizData] = useState([]);
   const [shuffledQuizData, setShuffledQuizData] = useState([]);
+  const [uncheckedIndices, setUncheckedIndices] = useState([]);
 
   useEffect(() => {
     switch (selectedFaculty) {
@@ -39,52 +40,60 @@ function QuizScreen(props) {
   }, []);
 
   useEffect(() => {
-    // Set up a timer to count down the time left
     const timer = setInterval(() => {
       setTimeLeft(timeLeft - 1);
     }, 1000);
-    // Clear the timer when the component unmounts or the time runs out
     return () => {
       clearInterval(timer);
     };
   }, [timeLeft]);
 
   const handleSubmit = () => {
-    // Loop through the selected options and update the score accordingly
     for (let questionIndex in selectedOptions) {
-      // Check if the selected option is correct
       if (
         selectedOptions[questionIndex] ===
         shuffledQuizData[questionIndex].answer
       ) {
-        // Update the score based on the question's mark
         setScore(score + shuffledQuizData[questionIndex].mark);
       }
     }
     // Finish the quiz
     setIsFinished(true);
   };
-
   const handleNextPage = () => {
-    // Move to the next page
-    setCurrentQuestion(currentQuestion + questionsPerPage);
+    const nextQuestionIndex = currentQuestion + questionsPerPage;
+    setCurrentQuestion(nextQuestionIndex);
+    setUncheckedIndices([]); // Reset uncheckedIndices when changing pages
   };
 
   const handlePreviousPage = () => {
-    // Move to the previous page
     setCurrentQuestion(currentQuestion - questionsPerPage);
+    setUncheckedIndices([]); // Reset uncheckedIndices when changing pages
   };
 
   const handleOptionChange = (event) => {
-    // Set the selected option for the current question to the value of the radio button
-    setSelectedOptions({
-      ...selectedOptions,
-      [event.target.name]: event.target.value,
+    const { name, value } = event.target;
+
+    setSelectedOptions((prevSelectedOptions) => {
+      const updatedSelectedOptions = {
+        ...prevSelectedOptions,
+        [name]: value,
+      };
+
+      // Calculate unchecked qs dynamically
+      const updatedUncheckedIndices = shuffledQuizData
+        .slice(currentQuestion, currentQuestion + questionsPerPage)
+        .map((_, index) => currentQuestion + index)
+        .filter((index) => !updatedSelectedOptions.hasOwnProperty(index))
+        .map((a) => a + 1);
+
+      setUncheckedIndices(updatedUncheckedIndices);
+
+      return updatedSelectedOptions;
     });
   };
 
   const formatTime = (seconds) => {
-    // Format the time left in hh:mm:ss
     const hours = Math.floor(seconds / 3600);
     const minutes = Math.floor((seconds % 3600) / 60);
     const sec = seconds % 60;
@@ -92,6 +101,7 @@ function QuizScreen(props) {
       .toString()
       .padStart(2, "0")}:${sec.toString().padStart(2, "0")}`;
   };
+
   // get random data
   function shuffleArray(array) {
     for (let i = array.length - 1; i > 0; i--) {
@@ -114,16 +124,28 @@ function QuizScreen(props) {
     const randomMark1Questions = getRandomQuestionsByMark(1);
     const randomMark2Questions = getRandomQuestionsByMark(2);
 
-    const shuffledQuestions = shuffleArray([
+    const shuffledQuestions = [
       ...randomMark1Questions,
       ...randomMark2Questions,
-    ]);
+    ];
     setShuffledQuizData(shuffledQuestions);
   }, [quizData]);
 
+  const timerRef = useRef(null);
+
+  useEffect(() => {
+    timerRef.current = setInterval(() => {
+      setTimeLeft((prevTimeLeft) => prevTimeLeft - 1);
+    }, 1000);
+
+    return () => {
+      clearInterval(timerRef.current);
+    };
+  }, []);
+
   return (
     <div className="min-h-screen bg-gray-100">
-      <ProfileDetails />
+      <ProfileDetails uncheckedIndices={uncheckedIndices} />
 
       <div className="max-w-lg p-8 bg-white shadow-md rounded-md mx-auto mt-16">
         <h1 className="text-2xl font-semibold mb-6">
@@ -146,7 +168,7 @@ function QuizScreen(props) {
               .map((question, index) => (
                 <div key={index} className="mb-6">
                   <h3 className="text-xl font-semibold mb-2">
-                    {index + 1}. {question.question}
+                    {currentQuestion + index + 1}. {question.question}
                   </h3>
 
                   <p className="text-gray-600">{question.mark} mark(s).</p>
