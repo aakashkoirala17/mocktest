@@ -49,16 +49,24 @@ function QuizScreen(props) {
   }, [timeLeft]);
 
   const handleSubmit = () => {
+    const confirmation = window.confirm("Are you sure you want to submit?");
+    if (confirmation) {
+      
     for (let questionIndex in selectedOptions) {
       if (
         selectedOptions[questionIndex] ===
         shuffledQuizData[questionIndex].answer
       ) {
         setScore(score + shuffledQuizData[questionIndex].mark);
+        
       }
     }
     // Finish the quiz
     setIsFinished(true);
+       }
+    else {
+      return false;
+    }
   };
   const handleNextPage = () => {
     const nextQuestionIndex = currentQuestion + questionsPerPage;
