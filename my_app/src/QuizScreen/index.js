@@ -175,32 +175,8 @@ function QuizScreen(props) {
       clearInterval(timerRef.current);
     };
   }, []);
-
-  const handleScrollToTop = () => {
-    if (quizContainerRef.current) {
-      quizContainerRef.current.scrollTop = 0;
-    }
-  };
-
-  const handleScrollToBottom = () => {
-    if (quizContainerRef.current) {
-      quizContainerRef.current.scrollTop =
-        quizContainerRef.current.scrollHeight;
-    }
-  };
-  const [scrollButtonPosition, setScrollButtonPosition] = useState("top");
-  const handleScroll = () => {
-    const { scrollTop, clientHeight, scrollHeight } = quizContainerRef.current;
-    const isAtTop = scrollTop === 0;
-    const isAtBottom = scrollTop + clientHeight === scrollHeight;
-
-    if (isAtTop) {
-      setScrollButtonPosition("top");
-    } else if (isAtBottom) {
-      setScrollButtonPosition("bottom");
-    } else {
-      setScrollButtonPosition("middle");
-    }
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
   return (
     <div className="absolute ml-96 ">
@@ -220,7 +196,7 @@ function QuizScreen(props) {
             )}
           </div>
         ) : (
-          <div className="">
+          <div>
             {shuffledQuizData
               .slice(currentQuestion, currentQuestion + questionsPerPage)
               .map((question, index) => (
@@ -283,6 +259,12 @@ function QuizScreen(props) {
           </div>
         )}
       </div>
+      <button
+        onClick={scrollToTop}
+        className="relative bottom-16 left-[1000px] bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold py-2 px-4 rounded focus:outline-none focus:shadow-outline-blue"
+      >
+        Scroll to Top
+      </button>
     </div>
   );
 }
