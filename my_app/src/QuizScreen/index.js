@@ -19,6 +19,7 @@ function QuizScreen(props) {
   const [quizData, setQuizData] = useState([]);
   const [shuffledQuizData, setShuffledQuizData] = useState([]);
   const [uncheckedIndices, setUncheckedIndices] = useState([]);
+  const quizContainerRef = useRef(null);
 
   useEffect(() => {
     switch (selectedFaculty) {
@@ -48,47 +49,17 @@ function QuizScreen(props) {
     };
   }, [timeLeft]);
 
-  const handleSubmit = () => {
-    const confirmation = window.confirm("Are you sure you want to submit?");
-    if (confirmation) {
-      
-    for (let questionIndex in selectedOptions) {
-      if (
-        selectedOptions[questionIndex] ===
-        shuffledQuizData[questionIndex].answer
-      ) {
-        setScore(score + shuffledQuizData[questionIndex].mark);
-        
-      }
-    }
-    // Finish the quiz
-    setIsFinished(true);
-       }
-    else {
-      return false;
-    }
-  };
-  const handleNextPage = () => {
-    const nextQuestionIndex = currentQuestion + questionsPerPage;
-    setCurrentQuestion(nextQuestionIndex);
-    setUncheckedIndices([]); // Reset uncheckedIndices when changing pages
-  };
-
-  const handlePreviousPage = () => {
-    setCurrentQuestion(currentQuestion - questionsPerPage);
-    setUncheckedIndices([]); // Reset uncheckedIndices when changing pages
-  };
-
   const handleOptionChange = (event) => {
     const { name, value } = event.target;
+    const nameKey = currentQuestion + Number(name);
 
     setSelectedOptions((prevSelectedOptions) => {
       const updatedSelectedOptions = {
         ...prevSelectedOptions,
-        [name]: value,
+        [nameKey.toString()]: value,
       };
 
-      // Calculate unchecked qs dynamically
+      // Calculate unchecked qs dynamically from all shuffledQuizData
       const updatedUncheckedIndices = shuffledQuizData
         .slice(currentQuestion, currentQuestion + questionsPerPage)
         .map((_, index) => currentQuestion + index)
@@ -99,6 +70,60 @@ function QuizScreen(props) {
 
       return updatedSelectedOptions;
     });
+  };
+
+  const handleSubmit = () => {
+    // Check if there are any unanswered questions
+    const unansweredQuestions = shuffledQuizData
+      .map((_, index) => index)
+      .filter((index) => !selectedOptions.hasOwnProperty(index))
+      .map((a) => a + 1);
+
+    if (unansweredQuestions.length > 0) {
+      const confirmation = window.confirm(
+        `You have unanswered questions (${unansweredQuestions.join(
+          ", "
+        )}). Are you sure you want to submit?`
+      );
+
+      if (!confirmation) {
+        return;
+      }
+    }
+
+    let totalRightMarks = 0;
+    let totalWrongMarks = 0;
+
+    // Calculate total marks for answered questions
+    for (let index = 0; index < shuffledQuizData.length; index++) {
+      const questionIndex = index;
+      if (selectedOptions.hasOwnProperty(questionIndex.toString())) {
+        if (
+          selectedOptions[questionIndex.toString()] ===
+          shuffledQuizData[index].answer
+        ) {
+          totalRightMarks += shuffledQuizData[index].mark;
+        } else {
+          // Deduct fixed marks for wrong answers (modify as needed)
+          totalWrongMarks += 1; // You may change this to any fixed value
+        }
+      }
+      setScore(totalRightMarks);
+    }
+
+    // Finish the quiz
+    setIsFinished(true);
+  };
+
+  const handleNextPage = () => {
+    const nextQuestionIndex = currentQuestion + questionsPerPage;
+    setCurrentQuestion(nextQuestionIndex);
+    setUncheckedIndices([]); // Reset uncheckedIndices when changing pages
+  };
+
+  const handlePreviousPage = () => {
+    setCurrentQuestion(currentQuestion - questionsPerPage);
+    setUncheckedIndices([]); // Reset uncheckedIndices when changing pages
   };
 
   const formatTime = (seconds) => {
@@ -151,11 +176,36 @@ function QuizScreen(props) {
     };
   }, []);
 
-  return (
-    <div className="min-h-screen bg-gray-100">
-      <ProfileDetails uncheckedIndices={uncheckedIndices} />
+  const handleScrollToTop = () => {
+    if (quizContainerRef.current) {
+      quizContainerRef.current.scrollTop = 0;
+    }
+  };
 
-      <div className="max-w-lg p-8 bg-white shadow-md rounded-md mx-auto mt-16">
+  const handleScrollToBottom = () => {
+    if (quizContainerRef.current) {
+      quizContainerRef.current.scrollTop =
+        quizContainerRef.current.scrollHeight;
+    }
+  };
+  const [scrollButtonPosition, setScrollButtonPosition] = useState("top");
+  const handleScroll = () => {
+    const { scrollTop, clientHeight, scrollHeight } = quizContainerRef.current;
+    const isAtTop = scrollTop === 0;
+    const isAtBottom = scrollTop + clientHeight === scrollHeight;
+
+    if (isAtTop) {
+      setScrollButtonPosition("top");
+    } else if (isAtBottom) {
+      setScrollButtonPosition("bottom");
+    } else {
+      setScrollButtonPosition("middle");
+    }
+  };
+  return (
+    <div className="absolute ml-96 ">
+      <ProfileDetails uncheckedIndices={uncheckedIndices} />
+      <div className="max-w-lg p-8 bg-gray-100 shadow-md rounded-md mx-auto mt-16 mb-8">
         <h1 className="text-2xl font-semibold mb-6">
           NEC MOCK TEST (<span className="text-sm">{selectedFaculty}</span>)
         </h1>
@@ -170,7 +220,7 @@ function QuizScreen(props) {
             )}
           </div>
         ) : (
-          <div>
+          <div className="">
             {shuffledQuizData
               .slice(currentQuestion, currentQuestion + questionsPerPage)
               .map((question, index) => (
@@ -188,7 +238,9 @@ function QuizScreen(props) {
                           id={option}
                           name={index}
                           value={option}
-                          checked={selectedOptions[index] === option}
+                          checked={
+                            selectedOptions[currentQuestion + index] === option
+                          }
                           onChange={handleOptionChange}
                           className="mr-2 text-blue-500"
                         />
@@ -227,10 +279,6 @@ function QuizScreen(props) {
               >
                 Submit
               </button>
-            </div>
-
-            <div className="mt-8 text-center text-gray-600">
-              <p>Time left: {formatTime(timeLeft)}</p>
             </div>
           </div>
         )}

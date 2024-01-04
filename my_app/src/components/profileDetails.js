@@ -4,15 +4,14 @@ import "../index.css";
 
 function ProfileDetails(props) {
   const { uncheckedIndices } = props;
-  const [timer, setTimer] = useState(2 * 60 * 60); 
-  const [showUnanswerQS, setShowUnanswerQS] = useState(false); 
+  const [timer, setTimer] = useState(2 * 60 * 60);
+  const [showUnanswerQS, setShowUnanswerQS] = useState(false);
 
   useEffect(() => {
     const intervalId = setInterval(() => {
       setTimer((prevTimer) => prevTimer - 1);
     }, 1000);
 
-    // Clear interval on component unmount
     return () => clearInterval(intervalId);
   }, []);
 
@@ -27,7 +26,7 @@ function ProfileDetails(props) {
   };
 
   return (
-    <div className="fixed  top-0  right-0 p-4 bg-white shadow-md w-96">
+    <div className="fixed top-0  right-0 p-4 bg-gray-100 mt-4 shadow-md w-96">
       <div className="flex">
         <div className="flex items-center">
           <img
@@ -49,21 +48,33 @@ function ProfileDetails(props) {
           </p>
         </div>
       </div>
-      <button 
-      className="bg-green-500 hover:bg-green-700 text-white font-semibold my-2 py-2 px-4 rounded focus:outline-none focus:shadow-outline-green"
-       onClick={()=>setShowUnanswerQS(!showUnanswerQS)}>show unanswered QS</button>
-      {showUnanswerQS ? 
+      {uncheckedIndices.length > 0 &&
+        (!showUnanswerQS ? (
+          <button
+            className="bg-green-500 hover:bg-green-700 text-white font-semibold my-2 py-2 px-4 rounded focus:outline-none focus:shadow-outline-green"
+            onClick={() => setShowUnanswerQS(!showUnanswerQS)}
+          >
+            show unanswered QS
+          </button>
+        ) : (
+          <button
+            className="bg-blue-500 hover:bg-blue-700 text-white font-semibold my-2 py-2 px-4 rounded focus:outline-none focus:shadow-outline-green"
+            onClick={() => setShowUnanswerQS(!showUnanswerQS)}
+          >
+            hide unanswered QS
+          </button>
+        ))}
+      {showUnanswerQS ? (
         <>
-        {uncheckedIndices.length > 0 && (
           <div className="mt-4 text-red-500">
-          <p>
-          Questions {uncheckedIndices.join(", ")} have not been answered.
-          </p>
+            <p>
+              Questions {uncheckedIndices.join(", ")} have not been answered.
+            </p>
           </div>
-          )}
-          </>
-          :''
-      }
+        </>
+      ) : (
+        ""
+      )}
     </div>
   );
 }
