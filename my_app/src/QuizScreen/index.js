@@ -158,8 +158,8 @@ function QuizScreen(props) {
     const randomMark2Questions = getRandomQuestionsByMark(2);
 
     const shuffledQuestions = [
-      ...randomMark1Questions,
-      ...randomMark2Questions,
+      ...randomMark1Questions.slice(0, 60),
+      ...randomMark2Questions.slice(0, 20),
     ];
     setShuffledQuizData(shuffledQuestions);
   }, [quizData]);
