@@ -241,6 +241,12 @@ function QuizScreen(props) {
                   Previous Page
                 </button>
               )}
+              <button
+                onClick={handleSubmit}
+                className="bg-green-500 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded focus:outline-none focus:shadow-outline-green"
+              >
+                Submit
+              </button>
               {currentQuestion < shuffledQuizData.length - questionsPerPage && (
                 <button
                   onClick={handleNextPage}
@@ -249,12 +255,6 @@ function QuizScreen(props) {
                   Next Page
                 </button>
               )}
-              <button
-                onClick={handleSubmit}
-                className="bg-green-500 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded focus:outline-none focus:shadow-outline-green"
-              >
-                Submit
-              </button>
             </div>
           </div>
         )}
