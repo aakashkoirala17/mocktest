@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { aakash } from "../assets";
 import "../index.css";
+import { FaUserCircle } from "react-icons/fa";
 
 function ProfileDetails(props) {
   const { uncheckedIndices } = props;
@@ -29,11 +29,7 @@ function ProfileDetails(props) {
     <div className="fixed top-0  right-0 p-4 bg-gray-100 mt-4 shadow-md w-96">
       <div className="flex">
         <div className="flex items-center">
-          <img
-            src={aakash}
-            alt="User"
-            className="w-10 h-10 rounded-full mr-2"
-          />
+          <FaUserCircle size="40" color="red" className="mr-2" />
           <div>
             <h1 className="text-lg font-semibold">USER</h1>
             <p className="text-sm text-gray-600">Roll No: 12312312</p>
