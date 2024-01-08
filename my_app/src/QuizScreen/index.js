@@ -179,9 +179,9 @@ function QuizScreen(props) {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
   return (
-    <div className="absolute ml-96 ">
+    <div className="absolute web-view ">
       <ProfileDetails uncheckedIndices={uncheckedIndices} />
-      <div className="max-w-lg p-8 bg-gray-100 shadow-md rounded-md mx-auto mt-16 mb-8">
+      <div className="max-w-lg md:max-w-xl lg:max-w-2xl xl:max-w-3xl p-8 bg-gray-100 shadow-md rounded-md mx-auto mb-8 web-view-qs mt-32">
         <h1 className="text-2xl font-semibold mb-6">
           NEC MOCK TEST (<span className="text-sm">{selectedFaculty}</span>)
         </h1>
@@ -232,25 +232,25 @@ function QuizScreen(props) {
                 </div>
               ))}
 
-            <div className="flex justify-between">
+            <div className="flex flex-col md:flex-row justify-between">
               {currentQuestion > 0 && (
                 <button
                   onClick={handlePreviousPage}
-                  className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold py-2 px-4 rounded focus:outline-none focus:shadow-outline-blue"
+                  className="md:mr-4 mb-2 md:mb-0 bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold py-2 px-4 rounded focus:outline-none focus:shadow-outline-blue"
                 >
                   Previous Page
                 </button>
               )}
               <button
                 onClick={handleSubmit}
-                className="bg-green-500 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded focus:outline-none focus:shadow-outline-green"
+                className="bg-green-500 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded focus:outline-none focus:shadow-outline-green mb-2 md:mb-0"
               >
                 Submit
               </button>
               {currentQuestion < shuffledQuizData.length - questionsPerPage && (
                 <button
                   onClick={handleNextPage}
-                  className="bg-blue-500 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded focus:outline-none focus:shadow-outline-blue"
+                  className="bg-blue-500 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded focus:outline-none focus:shadow-outline-blue mb-2 md:mb-0"
                 >
                   Next Page
                 </button>
@@ -261,7 +261,7 @@ function QuizScreen(props) {
       </div>
       <button
         onClick={scrollToTop}
-        className="relative bottom-16 left-[1000px] bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold py-2 px-4 rounded focus:outline-none focus:shadow-outline-blue"
+        className="fixed bottom-8 left-4 md:left-[calc(50%-500px)] bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold py-2 px-4 rounded focus:outline-none focus:shadow-outline-blue"
       >
         Scroll to Top
       </button>
