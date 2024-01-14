@@ -5,21 +5,22 @@ import { compQuizData } from "../set/computerSet";
 import electricQuizData from "../set/electricalSet";
 import { electronicQuizData } from "../set/electrnoicsSet";
 import { mechanicalQuizData } from "../set/mechanicalSet";
-const questionsPerPage = 20; // Number of questions to show per page
-const timeLimit = 2 * 60 * 60; // Time limit in seconds
-const passMark = 50; // Pass mark for the quiz
+import { FaArrowUp } from "react-icons/fa";
+
+const questionsPerPage = 20;
+const timeLimit = 2 * 60 * 60;
+const passMark = 50;
 
 function QuizScreen(props) {
   const { selectedFaculty } = props;
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [score, setScore] = useState(0);
   const [timeLeft, setTimeLeft] = useState(timeLimit);
-  const [selectedOptions, setSelectedOptions] = useState({}); // The options selected by the user for each question
-  const [isFinished, setIsFinished] = useState(false); // Whether the quiz is finished or not
+  const [selectedOptions, setSelectedOptions] = useState({});
+  const [isFinished, setIsFinished] = useState(false);
   const [quizData, setQuizData] = useState([]);
   const [shuffledQuizData, setShuffledQuizData] = useState([]);
   const [uncheckedIndices, setUncheckedIndices] = useState([]);
-  const quizContainerRef = useRef(null);
 
   useEffect(() => {
     switch (selectedFaculty) {
@@ -178,10 +179,26 @@ function QuizScreen(props) {
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
+  const [showScrollToTop, setShowScrollToTop] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const isAtBottom =
+        window.innerHeight + window.scrollY >= document.body.offsetHeight;
+
+      setShowScrollToTop(isAtBottom);
+    };
+
+    window.addEventListener("scroll", handleScroll);
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
   return (
     <div className="absolute web-view ">
       <ProfileDetails uncheckedIndices={uncheckedIndices} />
-      <div className="max-w-lg md:max-w-xl lg:max-w-2xl xl:max-w-3xl p-8 bg-gray-100 shadow-md rounded-md mx-auto mb-8 web-view-qs mt-32">
+      <div className="flex flex-col items-center justify-between max-w-lg md:max-w-xl lg:max-w-2xl xl:max-w-3xl p-8 bg-gray-100 shadow-md rounded-md mx-auto mb-8 md:mb-16 web-view-qs mt-32">
         <h1 className="text-2xl font-semibold mb-6">
           NEC MOCK TEST (<span className="text-sm">{selectedFaculty}</span>)
         </h1>
@@ -260,10 +277,11 @@ function QuizScreen(props) {
         )}
       </div>
       <button
+        title="scroll to top"
         onClick={scrollToTop}
-        className="fixed bottom-8 left-4 md:left-[calc(50%-500px)] bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold py-2 px-4 rounded focus:outline-none focus:shadow-outline-blue"
+        className="z-10 fixed bottom-16 left-4 md:left-[calc(50%+500px)] bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold py-2 px-4 rounded focus:outline-none focus:shadow-outline-blue"
       >
-        Scroll to Top
+        <FaArrowUp />
       </button>
     </div>
   );
