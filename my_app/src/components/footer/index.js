@@ -16,14 +16,7 @@ function Footer() {
         </a>
         <p className="text-sm text-gray-500 sm:ml-4 sm:pl-4 sm:border-l-2 sm:border-gray-200 sm:py-2 sm:mt-0 mt-4">
           © 2022 Dashverse —
-          <a
-            href="https://twitter.com/44_k45h"
-            className="text-gray-600 ml-1"
-            rel="noopener noreferrer"
-            target="_blank"
-          >
-            @44_k45h
-          </a>
+       
         </p>
         <span className="inline-flex sm:ml-auto sm:mt-0 mt-4 justify-center sm:justify-start">
           <a

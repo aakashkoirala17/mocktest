@@ -17,7 +17,7 @@ function App() {
       ) : (
         <FacultySelection onSelectFaculty={handleFacultySelect} />
       )}
-      <Footer />
+     <Footer /> 
     </div>
   );
 }
