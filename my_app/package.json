@@ -1,5 +1,5 @@
 {
-  "name": "my_app",
+  "name": "mocktest-tea",
   "version": "0.1.0",
   "private": false,
   "dependencies": {
@@ -28,6 +28,15 @@
       "react-app/jest"
     ]
   },
+  "description": "This is react app",
+  "main": "postcss.config.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/aakashkoirala17/mocktest.git"
+  },
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org/"
+  },
   "browserslist": {
     "production": [
       ">0.2%",
@@ -39,5 +48,15 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
-  }
+  },
+  "bugs": {
+    "url": "https://github.com/aakashkoirala17/mocktest/issues"
+  },
+  "homepage": "https://github.com/aakashkoirala17/mocktest#readme",
+  "devDependencies": {},
+  "keywords": [
+    "tea"
+  ],
+  "author": "Aakash",
+  "license": "ISC"
 }
